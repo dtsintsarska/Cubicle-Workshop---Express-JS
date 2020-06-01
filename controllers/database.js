@@ -15,7 +15,7 @@ let saveCube = (cube) => {
     let cubes = getAllCubes()
     cubes.push(cube)
 
-    fs.writeFile(dbPath, JSON.stringify(cubes), error => {
+    fs.writeFileSync(dbPath, JSON.stringify(cubes), error => {
         if (error) {
             throw error
         }
