@@ -1,6 +1,7 @@
 const express = require('express');
 const handlebars = require('express-handlebars');
 
+
 module.exports = (app) => {
 
     //TODO: Setup the view engine
@@ -9,6 +10,12 @@ module.exports = (app) => {
         extname: '.hbs'
     }));
     app.set('view engine', '.hbs');
+
+
+    app.use(express.urlencoded({
+        extended: true
+    }))
+    app.use(express.json())
 
     //TODO: Setup the static files
 

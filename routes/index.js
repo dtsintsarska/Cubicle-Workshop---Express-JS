@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
-let {
+const {
     getAllCubes,
-    getSingleCube
+    getSingleCube,
+    saveCube
 } = require('../controllers/database')
+
+const Cube = require('../models/cubeModel')
 
 router.get('/', (req, res) => {
     res.render('index.hbs', {
@@ -23,6 +26,22 @@ router.get('/create', (req, res) => {
     res.render('create.hbs', {
         title: 'Create New Cube',
     });
+});
+
+router.post('/create', (req, res) => {
+
+    let {
+        name,
+        description,
+        imageUrl,
+        difficultyLevel
+    } = req.body
+
+    let cube = new Cube(name, description, imageUrl, difficultyLevel)
+
+    cube.save()
+    res.redirect('/')
+
 });
 
 router.get('/details/:id', (req, res) => {
