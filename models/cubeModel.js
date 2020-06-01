@@ -3,7 +3,6 @@ const {
 } = require('uuid');
 const {
   saveCube,
-  getAllCubes
 } = require('../controllers/database')
 
 
@@ -24,10 +23,8 @@ class Cube {
       imageUrl: this.imageUrl,
       difficultyLevel: this.difficultyLevel,
     }
+    saveCube(newCube)
   }
-
-
-  saveCube(newCube)
 
 }
 
