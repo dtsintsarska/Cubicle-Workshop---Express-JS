@@ -1,18 +1,17 @@
 const express = require('express');
 const router = express.Router();
+const Cube = require('../models/cubeModel');
 
 const {
     getAllCubes,
     getSingleCube,
     saveCube
-} = require('../controllers/database')
+} = require('../controllers/cube');
 
-const Cube = require('../models/cubeModel')
-
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     res.render('index.hbs', {
         title: 'Home | Cube Workshop',
-        cubes: getAllCubes()
+        cubes: await getAllCubes(),
     });
 });
 
@@ -28,29 +27,43 @@ router.get('/create', (req, res) => {
     });
 });
 
-router.post('/create', (req, res) => {
-
+router.post('/create', async (req, res) => {
     let {
         name,
         description,
         imageUrl,
         difficultyLevel
-    } = req.body
+    } = req.body;
 
-    let cube = new Cube(name, description, imageUrl, difficultyLevel)
-
-    cube.save()
-    res.redirect('/')
-
+    let cube = {
+        name,
+        description,
+        imageUrl,
+        difficultyLevel
+    };
+    await saveCube(cube);
+    res.redirect('/');
 });
 
-router.get('/details/:id', (req, res) => {
-    let id = req.params.id
+router.get('/details/:id', async (req, res) => {
+    let id = req.params.id;
     res.render('details.hbs', {
         title: 'Details | Cube Workshop',
-        cube: getSingleCube(id)
+        cube: await getSingleCube(id),
     });
 });
+
+//Accessory routes 
+
+router.get('/create/accessory', async (req, res) => {
+    res.render('createAccessory.hbs', {
+        title: 'Create Accessory | Cube Workshop',
+    });
+});
+
+
+
+
 router.get('*', (req, res) => {
     res.render('404.hbs', {
         title: 'Not found',
