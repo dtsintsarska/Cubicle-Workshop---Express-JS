@@ -1,11 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const Cube = require('../models/cubeModel');
-
+const {
+    saveAccessory,
+    getAllAccessories
+} = require('../controllers/accessory')
 const {
     getAllCubes,
     getSingleCube,
-    saveCube
+    saveCube,
+    updateCube
 } = require('../controllers/cube');
 
 router.get('/', async (req, res) => {
@@ -39,7 +43,7 @@ router.post('/create', async (req, res) => {
         name,
         description,
         imageUrl,
-        difficultyLevel
+        difficultyLevel,
     };
     await saveCube(cube);
     res.redirect('/');
@@ -53,16 +57,66 @@ router.get('/details/:id', async (req, res) => {
     });
 });
 
-//Accessory routes 
+//Accessory routes
 
-router.get('/create/accessory', async (req, res) => {
+router.get('/create/accessory', (req, res) => {
     res.render('createAccessory.hbs', {
         title: 'Create Accessory | Cube Workshop',
     });
 });
 
+router.post('/create/accessory', async (req, res) => {
+    let {
+        name,
+        imageUrl,
+        description
+    } = req.body;
 
+    let accessory = {
+        name,
+        imageUrl,
+        description
+    }
+    await saveAccessory(accessory)
+    res.redirect('/')
+});
 
+router.get('/attach/accessory/:id', async (req, res) => {
+    let id = req.params.id;
+    let cube = await getSingleCube(id);
+    let allAccessories = await getAllAccessories()
+    let cubeAcc = cube.accessories.map((x) => x = x.toString())
+    let accessories = []
+
+    Array.from(allAccessories).forEach((x) => {
+        let el = x._id.toString()
+        if (!cubeAcc.includes(el)) {
+            accessories.push(x)
+        }
+    })
+
+    if (accessories.length > 0) {
+        isNotEverythingAttached = true
+    } else {
+        isNotEverythingAttached = false
+    }
+    res.render('attachAccessory.hbs', {
+        title: 'Attach Accessory | Cube Workshop',
+        ...cube,
+        accessories,
+        isNotEverythingAttached
+    })
+})
+
+router.post('/attach/accessory/:id', async (req, res) => {
+    let cubeId = req.params.id
+    const {
+        accessory
+    } = req.body
+
+    await updateCube(cubeId, accessory)
+    res.redirect(`/details/${req.params.id}`)
+})
 
 router.get('*', (req, res) => {
     res.render('404.hbs', {

@@ -13,21 +13,16 @@ const AccessorySchema = new mongoose.Schema({
     imageUrl: {
         type: String,
         required: true
-        // validate: {
-        //     validator: value => validator.isURL(value, {
-        //         protocols: ['http', 'https', 'ftp'],
-        //         require_tld: true,
-        //         require_protocol: true
-        //     }),
-        //     message: 'Must be a Valid URL'
-        // }
     },
     cubes: [{
         type: 'ObjectId',
         ref: 'Cube'
     }]
-
 })
+
+AccessorySchema.path('imageUrl').validate(function (url) {
+    return url.startsWith('http') || url.startsWith('https')
+}, 'Image url should starts with http/https')
 
 
 module.exports = mongoose.model('Accessory', AccessorySchema);

@@ -28,8 +28,18 @@ let getSingleCube = async (id) => {
     return searchedCube;
 };
 
+let updateCube = async (id, accessory) => {
+
+    await Cube.findByIdAndUpdate(id, {
+        $addToSet: {
+            accessories: [accessory]
+        }
+    })
+}
+
 module.exports = {
     getAllCubes,
     getSingleCube,
     saveCube,
+    updateCube
 };
