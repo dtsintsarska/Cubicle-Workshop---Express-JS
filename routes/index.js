@@ -9,7 +9,8 @@ const {
     getAllCubes,
     getSingleCube,
     saveCube,
-    updateCube
+    updateCube,
+    getCubeWithAccessories
 } = require('../controllers/cube');
 
 router.get('/', async (req, res) => {
@@ -51,9 +52,13 @@ router.post('/create', async (req, res) => {
 
 router.get('/details/:id', async (req, res) => {
     let id = req.params.id;
+    //let cube = await getSingleCube(id)
+    let cube = await getCubeWithAccessories(id)
+    console.log(cube.accessories)
     res.render('details.hbs', {
         title: 'Details | Cube Workshop',
-        cube: await getSingleCube(id),
+        cube,
+        accessories: cube.accessories
     });
 });
 
