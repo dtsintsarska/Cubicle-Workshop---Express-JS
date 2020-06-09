@@ -37,9 +37,16 @@ let updateCube = async (id, accessory) => {
     })
 }
 
+let getCubeWithAccessories = async (id) => {
+    const cube = await Cube.findById(id).populate('accessories').lean()
+    return cube
+}
+
 module.exports = {
     getAllCubes,
     getSingleCube,
     saveCube,
-    updateCube
+    updateCube,
+    getCubeWithAccessories
+
 };
