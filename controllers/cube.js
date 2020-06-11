@@ -42,11 +42,61 @@ let getCubeWithAccessories = async (id) => {
     return cube
 }
 
+let searchFunc = async (word, from, to) => {
+
+    let cubes;
+
+    if (word && from && to) {
+        cubes = await Cube.find({
+            name: {
+                $regex: word,
+                $options: 'i'
+            },
+            difficultyLevel: {
+                $gte: from,
+                $lte: to
+            }
+        }).lean()
+    } else if (word) {
+        cubes = await Cube.find({
+            name: {
+                $regex: word,
+                $options: 'i'
+            }
+        }).lean()
+
+    } else if (from && to) {
+        cubes = await Cube.find({
+            difficultyLevel: {
+                $gte: from,
+                $lte: to
+            }
+        }).lean()
+
+    } else if (from || to) {
+        cubes = await Cube.find({
+            $or: [{
+                    difficultyLevel: {
+                        $gte: from
+                    }
+                },
+                {
+                    difficultyLevel: {
+                        $lte: to
+                    }
+                }
+            ]
+        }).lean()
+
+    }
+
+    return cubes
+}
 module.exports = {
     getAllCubes,
     getSingleCube,
     saveCube,
     updateCube,
-    getCubeWithAccessories
-
+    getCubeWithAccessories,
+    searchFunc
 };
