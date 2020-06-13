@@ -24,6 +24,12 @@ const CubeSchema = new mongoose.Schema({
     type: 'ObjectId',
     ref: 'Accessory',
   }, ],
+  creatorId: {
+    type: 'ObjectId',
+    ref: 'User',
+    type: String,
+    required: true
+  }
 });
 
 CubeSchema.path('imageUrl').validate(function (url) {

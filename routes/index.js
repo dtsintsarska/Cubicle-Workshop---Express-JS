@@ -22,10 +22,6 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/search', async (req, res) => {
-    // res.render('index.hbs', {
-    //     title: 'Home | Cube Workshop',
-    //     cubes: await getAllCubes(),
-    // });
 
     let {
         search,
@@ -145,6 +141,8 @@ router.post('/attach/accessory/:id', async (req, res) => {
     await updateCube(cubeId, accessory)
     res.redirect(`/details/${req.params.id}`)
 })
+
+// 404 route 
 
 router.get('*', (req, res) => {
     res.render('404.hbs', {

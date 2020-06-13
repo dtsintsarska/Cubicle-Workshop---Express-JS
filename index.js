@@ -4,7 +4,8 @@ const config = require('./config/config')[env];
 const express = require('express');
 const mongoose = require('mongoose')
 
-const routerIndex = require('./routes')
+const routerIndex = require('./routes/index')
+const authRouter = require('./routes/auth')
 const app = express()
 
 mongoose.connect(config.DB_url, {
@@ -20,6 +21,8 @@ mongoose.connect(config.DB_url, {
 })
 
 require('./config/express')(app);
+app.use('/', authRouter)
 app.use('/', routerIndex)
+
 
 app.listen(config.port, console.log(`Listening on port ${config.port}! Now its up to you...`));
