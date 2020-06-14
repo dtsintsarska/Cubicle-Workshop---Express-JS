@@ -18,6 +18,15 @@ const registerUser = async (username, password) => {
     return userObject
 }
 
+const loginUser = async (username, password) => {
+
+    let user = await User.findOne({
+        username
+    })
+    let status = await bcrypt.compare(password, user.password)
+    return [status, user]
+}
+
 
 const tokenGenerator = (user) => {
 
@@ -31,5 +40,6 @@ const tokenGenerator = (user) => {
 
 module.exports = {
     registerUser,
-    tokenGenerator
+    tokenGenerator,
+    loginUser
 }

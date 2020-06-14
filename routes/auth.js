@@ -3,7 +3,8 @@ const router = express.Router();
 
 const {
     registerUser,
-    tokenGenerator
+    tokenGenerator,
+    loginUser
 } = require('../controllers/user')
 
 
@@ -23,7 +24,7 @@ router.post('/register', async (req, res) => {
     } = req.body
 
     if (password !== repeatPassword) {
-        alert('Password and Repeated Password should be same!')
+        // alert('Password and Repeated Password should be same!')
         res.redirect('/register')
     }
 
@@ -39,6 +40,25 @@ router.get('/login', (req, res) => {
         title: 'Login | Workshop Cube',
     });
 });
+
+router.post('/login', async (req, res) => {
+
+    let {
+        username,
+        password
+    } = req.body
+
+    let [status, user] = await loginUser(username, password)
+
+    if (!status) {
+        // alert('Wrong username/password!')
+        res.redirect('/login')
+    } else {
+        let token = await tokenGenerator(user)
+        res.cookie('aid', token)
+        res.redirect('/')
+    }
+})
 
 
 module.exports = router;
