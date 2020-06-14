@@ -1,5 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const {
+    checkAuth
+} = require('../controllers/user')
 
 const {
     saveAccessory,
@@ -13,13 +16,13 @@ const {
 
 //Accessory routes
 
-router.get('/create/accessory', (req, res) => {
+router.get('/create/accessory', checkAuth, (req, res) => {
     res.render('createAccessory.hbs', {
         title: 'Create Accessory | Cube Workshop',
     });
 });
 
-router.post('/create/accessory', async (req, res) => {
+router.post('/create/accessory', checkAuth, async (req, res) => {
     let {
         name,
         imageUrl,
@@ -35,7 +38,7 @@ router.post('/create/accessory', async (req, res) => {
     res.redirect('/')
 });
 
-router.get('/attach/accessory/:id', async (req, res) => {
+router.get('/attach/accessory/:id', checkAuth, async (req, res) => {
     let id = req.params.id;
     let cube = await getSingleCube(id);
     let allAccessories = await getAllAccessories()
@@ -62,7 +65,7 @@ router.get('/attach/accessory/:id', async (req, res) => {
     })
 })
 
-router.post('/attach/accessory/:id', async (req, res) => {
+router.post('/attach/accessory/:id', checkAuth, async (req, res) => {
     let cubeId = req.params.id
     const {
         accessory
