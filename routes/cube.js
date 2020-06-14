@@ -1,5 +1,9 @@
+const env = process.env.NODE_ENV || 'development';
+
 const express = require('express');
 const router = express.Router();
+const config = require('../config/config')[env]
+const jwt = require('jsonwebtoken')
 
 const {
     getAllCubes,
@@ -24,11 +28,16 @@ router.post('/create', async (req, res) => {
         difficultyLevel
     } = req.body;
 
+    let token = req.cookies['aid']
+    let creator = jwt.verify(token, config.privateKey)
+    let creatorId = creator.userId
+
     let cube = {
         name,
         description,
         imageUrl,
         difficultyLevel,
+        creatorId
     };
     await saveCube(cube);
     res.redirect('/');
