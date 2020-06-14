@@ -39,8 +39,25 @@ const tokenGenerator = (user) => {
     return token
 }
 
+
+const checkAuth = (req, res, next) => {
+
+    let token = req.cookies['aid']
+    if (!token) {
+        return res.redirect('/login')
+    }
+
+    try {
+        jwt.verify(token, config.privateKey)
+        next()
+    } catch {
+        return res.redirect('/login')
+    }
+
+}
 module.exports = {
     registerUser,
     tokenGenerator,
-    loginUser
+    loginUser,
+    checkAuth
 }
