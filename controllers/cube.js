@@ -43,9 +43,7 @@ let getCubeWithAccessories = async (id) => {
 }
 
 let searchFunc = async (word, from, to) => {
-
     let cubes;
-
     if (word && from && to) {
         cubes = await Cube.find({
             name: {
@@ -87,16 +85,31 @@ let searchFunc = async (word, from, to) => {
                 }
             ]
         }).lean()
-
     }
-
     return cubes
 }
+
+let editCube = async (id, editedCube) => {
+    await Cube.findByIdAndUpdate(id, editedCube, {
+        new: true,
+        useFindAndModify: false
+    })
+}
+
+let deleteCube = async (id) => {
+
+    await Cube.findOneAndDelete({
+        _id: id
+    })
+}
+
 module.exports = {
     getAllCubes,
     getSingleCube,
     saveCube,
     updateCube,
     getCubeWithAccessories,
-    searchFunc
+    searchFunc,
+    editCube,
+    deleteCube
 };
