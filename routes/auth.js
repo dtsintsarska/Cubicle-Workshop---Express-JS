@@ -4,13 +4,17 @@ const router = express.Router();
 const {
     registerUser,
     tokenGenerator,
-    loginUser
+    loginUser,
+    openPagesCheck
 } = require('../controllers/user')
 
 
 //Login, register and logout routes
 
-router.get('/register', (req, res) => {
+router.get('/register', openPagesCheck, (req, res) => {
+    if (req.isLoggedIn === true) {
+        return res.redirect('/')
+    }
     res.render('registerPage.hbs', {
         title: 'Register | Workshop Cube',
     });
@@ -35,7 +39,10 @@ router.post('/register', async (req, res) => {
 
 })
 
-router.get('/login', (req, res) => {
+router.get('/login', openPagesCheck, (req, res) => {
+    if (req.isLoggedIn === true) {
+        return res.redirect('/')
+    }
     res.render('loginPage.hbs', {
         title: 'Login | Workshop Cube',
     });
@@ -58,6 +65,12 @@ router.post('/login', async (req, res) => {
         res.cookie('aid', token)
         res.redirect('/')
     }
+})
+
+router.get('/logout', (req, res) => {
+    res.clearCookie('aid')
+
+    res.redirect('/')
 })
 
 module.exports = router;

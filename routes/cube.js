@@ -5,13 +5,11 @@ const router = express.Router();
 const config = require('../config/config')[env]
 const jwt = require('jsonwebtoken')
 const {
-    checkAuth
+    checkAuth,
+    openPagesCheck
 } = require('../controllers/user')
 const {
-    getAllCubes,
-    getSingleCube,
     saveCube,
-    updateCube,
     getCubeWithAccessories,
 } = require('../controllers/cube');
 
@@ -19,6 +17,7 @@ const {
 router.get('/create', checkAuth, (req, res) => {
     res.render('create.hbs', {
         title: 'Create New Cube',
+        isLoggedIn: req.isLoggedIn
     });
 });
 
@@ -45,25 +44,28 @@ router.post('/create', checkAuth, async (req, res) => {
     res.redirect('/');
 });
 
-router.get('/details/:id', checkAuth, async (req, res) => {
+router.get('/details/:id', openPagesCheck, async (req, res) => {
     let id = req.params.id;
     let cube = await getCubeWithAccessories(id)
     res.render('details.hbs', {
         title: 'Details | Cube Workshop',
         cube,
-        accessories: cube.accessories
+        accessories: cube.accessories,
+        isLoggedIn: req.isLoggedIn
     });
 });
 
-router.get('/cube/edit/:id', (req, res) => {
+router.get('/cube/edit/:id', checkAuth, (req, res) => {
     res.render('editCubePage.hbs', {
         title: 'Edit Cube | Workshop Cube',
+        isLoggedIn: req.isLoggedIn
     });
 });
 
-router.get('/cube/delete/:id', (req, res) => {
+router.get('/cube/delete/:id', checkAuth, (req, res) => {
     res.render('deleteCubePage.hbs', {
         title: 'Delete Cube | Workshop Cube',
+        isLoggedIn: req.isLoggedIn
     });
 });
 
