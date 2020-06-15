@@ -5,15 +5,20 @@ const {
     getAllCubes,
     searchFunc
 } = require('../controllers/cube');
+const {
+    checkAuth,
+    openPagesCheck
+} = require('../controllers/user');
 
-router.get('/', async (req, res) => {
+router.get('/', openPagesCheck, async (req, res) => {
     res.render('index.hbs', {
         title: 'Home | Cube Workshop',
         cubes: await getAllCubes(),
+        isLoggedIn: req.isLoggedIn
     });
 });
 
-router.post('/search', async (req, res) => {
+router.post('/search', openPagesCheck, async (req, res) => {
 
     let {
         search,
@@ -27,21 +32,24 @@ router.post('/search', async (req, res) => {
 
     res.render('index.hbs', {
         title: 'Seach results | Cube Workshop',
-        cubes
+        cubes,
+        isLoggedIn: req.isLoggedIn
     })
 });
 
-router.get('/about', (req, res) => {
+router.get('/about', openPagesCheck, (req, res) => {
     res.render('about.hbs', {
         title: 'About | Cube Workshop',
+        isLoggedIn: req.isLoggedIn
     });
 });
 
 // 404 route 
 
-router.get('*', (req, res) => {
+router.get('*', openPagesCheck, (req, res) => {
     res.render('404.hbs', {
         title: 'Not found',
+        isLoggedIn: req.isLoggedIn
     });
 });
 module.exports = router;

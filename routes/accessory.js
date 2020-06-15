@@ -19,6 +19,7 @@ const {
 router.get('/create/accessory', checkAuth, (req, res) => {
     res.render('createAccessory.hbs', {
         title: 'Create Accessory | Cube Workshop',
+        isLoggedIn: req.isLoggedIn
     });
 });
 
@@ -61,7 +62,8 @@ router.get('/attach/accessory/:id', checkAuth, async (req, res) => {
         title: 'Attach Accessory | Cube Workshop',
         ...cube,
         accessories,
-        isNotEverythingAttached
+        isNotEverythingAttached,
+        isLoggedIn: req.isLoggedIn
     })
 })
 
