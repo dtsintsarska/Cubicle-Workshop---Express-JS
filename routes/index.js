@@ -26,8 +26,6 @@ router.post('/search', openPagesCheck, async (req, res) => {
         to
     } = req.body
 
-    console.log('search', search, 'from', from, 'to', to)
-
     let cubes = await searchFunc(search, from, to)
 
     res.render('index.hbs', {

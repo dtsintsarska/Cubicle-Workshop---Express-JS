@@ -11,7 +11,11 @@ const {
 const {
     saveCube,
     getCubeWithAccessories,
+    getSingleCube,
+    editCube,
+    deleteCube
 } = require('../controllers/cube');
+const cube = require('../controllers/cube');
 
 
 router.get('/create', checkAuth, (req, res) => {
@@ -55,19 +59,54 @@ router.get('/details/:id', openPagesCheck, async (req, res) => {
     });
 });
 
-router.get('/cube/edit/:id', checkAuth, (req, res) => {
+router.get('/cube/edit/:id', checkAuth, async (req, res) => {
+
+    let id = req.params.id;
+    let cube = await getSingleCube(id)
     res.render('editCubePage.hbs', {
         title: 'Edit Cube | Workshop Cube',
+        isLoggedIn: req.isLoggedIn,
+        id,
+        ...cube,
         isLoggedIn: req.isLoggedIn
     });
 });
 
-router.get('/cube/delete/:id', checkAuth, (req, res) => {
+router.post('/cube/edit/:id', checkAuth, async (req, res) => {
+    let id = req.params.id
+
+    let {
+        name,
+        description,
+        imageUrl,
+        difficultyLevel
+    } = req.body;
+
+    await editCube(id, {
+        name,
+        description,
+        imageUrl,
+        difficultyLevel
+    })
+
+    res.redirect('/')
+})
+
+router.get('/cube/delete/:id', checkAuth, async (req, res) => {
+    let id = req.params.id
+    let cube = await getSingleCube(id)
     res.render('deleteCubePage.hbs', {
         title: 'Delete Cube | Workshop Cube',
-        isLoggedIn: req.isLoggedIn
+        isLoggedIn: req.isLoggedIn,
+        id,
+        ...cube
     });
 });
 
+router.post('/cube/delete/:id', checkAuth, async (req, res) => {
+    let id = req.params.id
+    await deleteCube(id)
+    res.redirect('/')
+})
 
 module.exports = router;
