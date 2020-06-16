@@ -43,6 +43,12 @@ router.get('/about', openPagesCheck, (req, res) => {
 });
 
 // 404 route 
+router.get('/404', openPagesCheck, (req, res) => {
+    res.render('404.hbs', {
+        title: 'Not found',
+        isLoggedIn: req.isLoggedIn
+    });
+});
 
 router.get('*', openPagesCheck, (req, res) => {
     res.render('404.hbs', {

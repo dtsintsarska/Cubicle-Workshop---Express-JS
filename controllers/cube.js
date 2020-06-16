@@ -1,7 +1,7 @@
 const Cube = require('../models/cubeModel');
 const mongoose = require('mongoose');
 
-let getAllCubes = async () => {
+const getAllCubes = async () => {
     try {
         let cubes = await Cube.find().lean();
         return cubes;
@@ -11,7 +11,7 @@ let getAllCubes = async () => {
     }
 };
 
-let saveCube = (cube) => {
+const saveCube = (cube) => {
     let newOne = new Cube(cube);
     newOne.save((err) => {
         if (err) {
@@ -22,13 +22,13 @@ let saveCube = (cube) => {
     });
 };
 
-let getSingleCube = async (id) => {
+const getSingleCube = async (id) => {
 
     let searchedCube = await Cube.findById(id).lean()
     return searchedCube;
 };
 
-let updateCube = async (id, accessory) => {
+const updateCube = async (id, accessory) => {
 
     await Cube.findByIdAndUpdate(id, {
         $addToSet: {
@@ -37,12 +37,12 @@ let updateCube = async (id, accessory) => {
     })
 }
 
-let getCubeWithAccessories = async (id) => {
+const getCubeWithAccessories = async (id) => {
     const cube = await Cube.findById(id).populate('accessories').lean()
     return cube
 }
 
-let searchFunc = async (word, from, to) => {
+const searchFunc = async (word, from, to) => {
     let cubes;
     if (word && from && to) {
         cubes = await Cube.find({
@@ -89,17 +89,19 @@ let searchFunc = async (word, from, to) => {
     return cubes
 }
 
-let editCube = async (id, editedCube) => {
+const editCube = async (id, editedCube) => {
     await Cube.findByIdAndUpdate(id, editedCube, {
         new: true,
         useFindAndModify: false
     })
 }
 
-let deleteCube = async (id) => {
+const deleteCube = async (id) => {
 
     await Cube.findOneAndDelete({
         _id: id
+    }, {
+        useFindAndModify: false
     })
 }
 

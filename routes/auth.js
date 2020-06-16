@@ -58,7 +58,6 @@ router.post('/login', async (req, res) => {
     let [status, user] = await loginUser(username, password)
 
     if (!status) {
-        // alert('Wrong username/password!')
         res.redirect('/login')
     } else {
         let token = await tokenGenerator(user)
