@@ -6,7 +6,8 @@ const config = require('../config/config')[env]
 const jwt = require('jsonwebtoken')
 const {
     checkAuth,
-    openPagesCheck
+    openPagesCheck,
+    autorAuthorization
 } = require('../controllers/user')
 const {
     saveCube,
@@ -48,65 +49,88 @@ router.post('/create', checkAuth, async (req, res) => {
     res.redirect('/');
 });
 
-router.get('/details/:id', openPagesCheck, async (req, res) => {
+router.get('/details/:id', openPagesCheck, autorAuthorization, async (req, res) => {
     let id = req.params.id;
     let cube = await getCubeWithAccessories(id)
     res.render('details.hbs', {
         title: 'Details | Cube Workshop',
         cube,
         accessories: cube.accessories,
-        isLoggedIn: req.isLoggedIn
-    });
-});
-
-router.get('/cube/edit/:id', checkAuth, async (req, res) => {
-
-    let id = req.params.id;
-    let cube = await getSingleCube(id)
-    res.render('editCubePage.hbs', {
-        title: 'Edit Cube | Workshop Cube',
         isLoggedIn: req.isLoggedIn,
-        id,
-        ...cube,
-        isLoggedIn: req.isLoggedIn
+        isAuthorized: req.isAuthorized
     });
 });
 
-router.post('/cube/edit/:id', checkAuth, async (req, res) => {
-    let id = req.params.id
+router.get('/cube/edit/:id', checkAuth, autorAuthorization, async (req, res) => {
 
-    let {
-        name,
-        description,
-        imageUrl,
-        difficultyLevel
-    } = req.body;
+    if (req.isAuthorized) {
+        let id = req.params.id;
+        let cube = await getSingleCube(id)
+        res.render('editCubePage.hbs', {
+            title: 'Edit Cube | Workshop Cube',
+            isLoggedIn: req.isLoggedIn,
+            id,
+            ...cube,
+            isLoggedIn: req.isLoggedIn
+        });
+    } else {
+        console.log('Access denied!')
+        res.redirect('/404')
+    }
 
-    await editCube(id, {
-        name,
-        description,
-        imageUrl,
-        difficultyLevel
-    })
+});
 
-    res.redirect('/')
+router.post('/cube/edit/:id', checkAuth, autorAuthorization, async (req, res) => {
+
+    if (req.isAuthorized) {
+        let id = req.params.id
+        let {
+            name,
+            description,
+            imageUrl,
+            difficultyLevel
+        } = req.body;
+
+        await editCube(id, {
+            name,
+            description,
+            imageUrl,
+            difficultyLevel
+        })
+        res.redirect('/')
+    } else {
+        console.log('Access denied!')
+        res.redirect('/404')
+    }
 })
 
-router.get('/cube/delete/:id', checkAuth, async (req, res) => {
-    let id = req.params.id
-    let cube = await getSingleCube(id)
-    res.render('deleteCubePage.hbs', {
-        title: 'Delete Cube | Workshop Cube',
-        isLoggedIn: req.isLoggedIn,
-        id,
-        ...cube
-    });
+router.get('/cube/delete/:id', checkAuth, autorAuthorization, async (req, res) => {
+    if (req.isAuthorized) {
+        let id = req.params.id
+        let cube = await getSingleCube(id)
+        res.render('deleteCubePage.hbs', {
+            title: 'Delete Cube | Workshop Cube',
+            isLoggedIn: req.isLoggedIn,
+            id,
+            ...cube,
+        })
+    } else {
+        console.log('Access denied!')
+        res.redirect('/404')
+    }
+
 });
 
-router.post('/cube/delete/:id', checkAuth, async (req, res) => {
-    let id = req.params.id
-    await deleteCube(id)
-    res.redirect('/')
+router.post('/cube/delete/:id', checkAuth, autorAuthorization, async (req, res) => {
+
+    if (req.isAuthorized) {
+        let id = req.params.id
+        await deleteCube(id)
+        res.redirect('/')
+    } else {
+        console.log('Access denied!')
+        res.redirect('/404')
+    }
 })
 
 module.exports = router;

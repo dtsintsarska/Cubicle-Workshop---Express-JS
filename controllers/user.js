@@ -3,6 +3,9 @@ const User = require('../models/userModel');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const {
+    getSingleCube
+} = require('./cube');
 const config = require('../config/config')[env];
 
 const registerUser = async (username, password) => {
@@ -40,10 +43,10 @@ const tokenGenerator = (user) => {
 
 const checkAuth = (req, res, next) => {
     let token = req.cookies['aid'];
-    // if (!token) {
-    //     req.isLoggedIn = false;
-    //     res.redirect('/login');
-    // }
+    if (!token) {
+        req.isLoggedIn = false;
+        res.redirect('/login');
+    }
 
     try {
         jwt.verify(token, config.privateKey);
@@ -67,10 +70,33 @@ const openPagesCheck = (req, res, next) => {
     }
     next()
 }
+
+const autorAuthorization = async (req, res, next) => {
+    let id = req.params.id;
+    let cube = await getSingleCube(id)
+    let author = cube.creatorId
+    let token = req.cookies['aid'];
+    if (!token) {
+        req.isAuthorized = false;
+    } else {
+        try {
+            jwt.verify(token, config.privateKey);
+            let decoded = jwt.decode(token)
+            if (author.toString() == decoded.userId.toString()) {
+                req.isAuthorized = true;
+            }
+        } catch {
+            req.isAuthorized = false;
+        }
+    }
+    next()
+}
+
 module.exports = {
     registerUser,
     tokenGenerator,
     loginUser,
     checkAuth,
-    openPagesCheck
+    openPagesCheck,
+    autorAuthorization
 };

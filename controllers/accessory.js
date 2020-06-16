@@ -1,7 +1,7 @@
 const Accessory = require('../models/accessoryModel');
 const mongoose = require('mongoose');
 
-let saveAccessory = (accessory) => {
+const saveAccessory = (accessory) => {
     let newAcc = new Accessory(accessory);
     newAcc.save((err) => {
         if (err) {
@@ -12,7 +12,7 @@ let saveAccessory = (accessory) => {
     });
 };
 
-let getAllAccessories = async () => {
+const getAllAccessories = async () => {
     try {
         let allAccessories = await Accessory.find().lean()
         return allAccessories
