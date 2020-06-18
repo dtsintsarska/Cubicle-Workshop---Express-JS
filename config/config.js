@@ -1,8 +1,8 @@
 module.exports = {
     development: {
-        port: process.env.PORT || 3000,
-        privateKey: 'my-private-key-workshop',
-        DB_url: `mongodb+srv://dbUser:${process.env.DB_pass}@starter-jgnm4.azure.mongodb.net/Cubicles?retryWrites=true&w=majority`
+        port: process.env.PORT,
+        privateKey: process.env.PRIVATE_KEY,
+        DB_url: process.env.DB_URL
     },
     production: {}
 };
