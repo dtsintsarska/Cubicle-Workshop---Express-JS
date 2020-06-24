@@ -1,5 +1,7 @@
 const env = process.env.NODE_ENV || 'development';
-
+const {
+    validationResult
+} = require('express-validator')
 const express = require('express');
 const router = express.Router();
 const config = require('../config/config')[env]
@@ -17,6 +19,10 @@ const {
     deleteCube
 } = require('../controllers/cube');
 const cube = require('../controllers/cube');
+const {
+    cubeValidator
+} = require('../utilz/validator');
+
 
 
 router.get('/create', checkAuth, (req, res) => {
@@ -26,7 +32,7 @@ router.get('/create', checkAuth, (req, res) => {
     });
 });
 
-router.post('/create', checkAuth, async (req, res) => {
+router.post('/create', checkAuth, cubeValidator, async (req, res) => {
     let {
         name,
         description,
@@ -34,6 +40,14 @@ router.post('/create', checkAuth, async (req, res) => {
         difficultyLevel
     } = req.body;
 
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.render('create.hbs', {
+            message: errors.array()[0].msg,
+            title: 'Create New Cube',
+            isLoggedIn: req.isLoggedIn
+        })
+    }
     let token = req.cookies['aid']
     let creator = jwt.verify(token, config.privateKey)
     let creatorId = creator.userId
