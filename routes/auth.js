@@ -1,5 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const {
+    userValidator
+} = require('../utilz/validator')
+const {
+    validationResult
+} = require('express-validator')
 
 const {
     registerUser,
@@ -20,16 +26,20 @@ router.get('/register', openPagesCheck, (req, res) => {
     });
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', userValidator, async (req, res) => {
     let {
         username,
         password,
         repeatPassword
     } = req.body
 
-    if (password !== repeatPassword) {
-        // alert('Password and Repeated Password should be same!')
-        res.redirect('/register')
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.render('registerPage.hbs', {
+            message: errors.array()[0].msg,
+            oldInput: req.body,
+            title: 'Register | Workshop Cube',
+        })
     }
 
     let user = await registerUser(username, password)
@@ -58,7 +68,12 @@ router.post('/login', async (req, res) => {
     let [status, user] = await loginUser(username, password)
 
     if (!status) {
-        res.redirect('/login')
+        const message = 'Wrong password or username!'
+        res.render('loginPage.hbs', {
+            message,
+            title: 'Login | Workshop Cube'
+        });
+        return
     } else {
         let token = await tokenGenerator(user)
         res.cookie('aid', token)
